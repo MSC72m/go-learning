@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -18,6 +19,7 @@ type userInfo struct {
 	id       int
 	username string
 	email    string
+	mu       sync.Mutex
 }
 
 type users struct{ users []userInfo }
@@ -51,10 +53,9 @@ func (u *users) getUsers(random *randomNumbers) {
 	if err != nil {
 		errMessage := fmt.Sprintf("Could not get Memory Usage: %s\n", err)
 		fmt.Println(errMessage)
+		return
 	}
-	if memoryUsed != -1 {
-		fmt.Printf("Memory Usage while generating user with ID: %d is: %.2fMB\n", id, memoryUsed)
-	}
+	fmt.Printf("Memory Usage while generating user with ID: %d is: %.2fMB\n", id, memoryUsed)
 }
 
 func repeateString(s string, num int) string {
@@ -152,5 +153,5 @@ func main() {
 	totalNum := 50000000
 	processUsers(totalNum)
 
-	fmt.Printf("Total Time: %.5f seconds \n", time.Since(start).Seconds())
+	fmt.Printf("Total Time: %.3f seconds \n", time.Since(start).Seconds())
 }
